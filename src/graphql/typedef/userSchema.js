@@ -16,17 +16,17 @@ const userSchema = gql`
     password: String!
   }
   input LoginUserInput {
-    username: String!
     email: String!
     password: String!
   }
   type Query {
-    getUser(_id: ID!): User
+    getUser(id: ID!): User
     listUsers: [User]
   }
   type EmptyResponse {
     message: String
     status: String
+    id: Int
   }
   type Mutation {
     registerUser(input: RegisterUserInput!): User

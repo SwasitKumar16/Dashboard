@@ -31,21 +31,45 @@ const userResolver = {
     },
     loginUser: async (_, { input }) => {
       const { email, password } = input;
+      const user = await prisma.users.findUnique({ where: { email } });
 
-      const existingEmail = await prisma.users.findUnique({ where: { email } });
-      const salt = await bcryptjs.genSalt(10);
-      const hashedPassword = await bcryptjs.hash(password, salt);
+      if (!user) {
+        return {
+          message: "User not found",
+          status: false,
+        };
+      }
+      const id = user.id;
 
-      if (existingEmail.email === email)
+      const isPasswordValid = await bcryptjs.compare(password, user.password);
+
+      if (isPasswordValid && email === user.email) {
         return {
           message: "Logged In",
           status: true,
+          id,
         };
-      else
+      } else {
         return {
-          message: "Failed",
+          message: "Invalid password",
           status: false,
         };
+      }
+    },
+  },
+  Query: {
+    getUser: async (_, { id }) => {
+      const userId = parseInt(id, 10);
+      const user = await prisma.users.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+      console.log(user);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return user;
     },
   },
 };

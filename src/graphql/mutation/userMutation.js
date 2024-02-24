@@ -8,11 +8,13 @@ export const REGISTER_USER_MUTATION = gql`
     }
   }
 `;
+
 export const LOGIN_USER_MUTATION = gql`
-  mutation LoginUser($input: RegisterUserInput!) {
+  mutation LoginUser($input: LoginUserInput!) {
     loginUser(input: $input) {
       message
       status
+      id
     }
   }
 `;

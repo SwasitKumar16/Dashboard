@@ -2,6 +2,8 @@
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@apollo/client";
+import { LOGIN_USER_MUTATION } from "@/graphql/mutation/userMutation";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -10,19 +12,31 @@ export default function LoginPage() {
     password: "",
   });
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const onLogin = async () => {
+  const [loginUser, { loading: loginLoading }] =
+    useMutation(LOGIN_USER_MUTATION);
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      setLoading(true);
-      const response = await axios.post("/api/user/login", user);
-      console.log(response.data);
-      router.push("/profile");
+      const { data } = await loginUser({
+        variables: {
+          input: {
+            email: user.email,
+            password: user.password,
+          },
+        },
+      });
+      if (data?.loginUser.status) {
+        console.log(data.loginUser.id);
+        localStorage.setItem("userId", data.loginUser.id);
+        router.push("/dashboard");
+      } else {
+        throw new Error(data?.loginUser.message || "Login failed");
+      }
     } catch (error) {
-      console.log("Signup failed", error.message);
-    } finally {
-      setLoading(false);
+      console.log(error.message);
     }
   };
+
   useEffect(() => {
     if (user.email.length > 0 && user.password.length > 0) {
       setButtonDisabled(false);
@@ -37,7 +51,7 @@ export default function LoginPage() {
         backgroundImage: `url('https://images.unsplash.com/photo-1518655048521-f130df041f66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
       }}
     >
-      <h1 className=" text-3xl">{loading ? "Processing.." : "Login"}</h1>
+      <h1 className=" text-3xl">{loginLoading ? "Processing.." : "Login"}</h1>
       <hr />
       <label htmlFor="username">email</label>
       <input
@@ -59,7 +73,7 @@ export default function LoginPage() {
         placeholder="password"
       />
       <button
-        onClick={onLogin}
+        onClick={handleLogin}
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600"
       >
         {buttonDisabled ? "No login" : "Login"}

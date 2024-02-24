@@ -15,7 +15,6 @@ export default function SignupPage() {
     username: "",
   });
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
-  // const [loading, setLoading] = React.useState(false);
 
   const [registerUser, { loading: registerLoading }] = useMutation(
     REGISTER_USER_MUTATION
@@ -37,7 +36,7 @@ export default function SignupPage() {
       if (data?.registerUser) {
         router.push("/dashboard");
       } else {
-        throw new error("Failed");
+        throw new Error("Failed");
       }
     } catch (error) {
       console.log(error.message);
