@@ -8,32 +8,26 @@ import {
   MdOutlineSettings,
   MdOutlineLogout,
   MdDomain,
+  MdGridOn,
 } from "react-icons/md";
-import { FaUserEdit } from "react-icons/fa";
+// import { FaUserEdit } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
-import { FaRegComments } from "react-icons/fa";
 import { BiMessageSquareDots } from "react-icons/bi";
 import { useRouter } from "next/navigation";
+import Layout from "@/app/dashboard/page";
 
-function SideNavbar() {
+function AdminNavbar() {
   const router = useRouter();
-  const onLogin = () => {
+  const onLogout = () => {
     try {
-      router.push("/login");
+      router.push("/adminlogin");
     } catch (error) {
       throw new Error(error.message);
     }
   };
   const onProfile = () => {
     try {
-      router.push("/dashboard/profile");
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
-  const addAdmin = () => {
-    try {
-      router.push("/dashboard/addadmin");
+      router.push("/dashboard_admin/profile");
     } catch (error) {
       throw new Error(error.message);
     }
@@ -73,13 +67,10 @@ function SideNavbar() {
                 </button>
               </div>
               <div className="flex mb-2 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto">
-                <button
-                  className="flex items-center gap-2 focus:outline-none "
-                  onClick={addAdmin}
-                >
-                  <FaUserEdit className="text-2xl text-gray-600 group-hover:text-white " />
+                <button className="flex items-center gap-2 focus:outline-none ">
+                  <MdGridOn className="text-2xl text-gray-600 group-hover:text-white " />
                   <h3 className="text-base text-gray-800 group-hover:text-white font-semibold ">
-                    Add Admins
+                    Branches
                   </h3>
                 </button>
               </div>
@@ -124,7 +115,7 @@ function SideNavbar() {
               <div className="flex mb-2 justify-start items-center gap-4 pl-5 border border-gray-200  hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto">
                 <button
                   className="flex items-center gap-2 focus:outline-none"
-                  onClick={onLogin}
+                  onClick={onLogout}
                 >
                   <MdOutlineLogout className="text-2xl text-gray-600 group-hover:text-white" />
                   <span className="text-base text-gray-800 group-hover:text-white font-semibold">
@@ -140,4 +131,4 @@ function SideNavbar() {
   );
 }
 
-export default SideNavbar;
+export default AdminNavbar;

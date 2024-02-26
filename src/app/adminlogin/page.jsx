@@ -1,40 +1,35 @@
 "use client";
-import Link from "next/link";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@apollo/client";
-import { LOGIN_USER_MUTATION } from "@/graphql/mutation/userMutation";
-import Cookies from "js-cookie";
+import { LOGIN_ADMIN_MUTATION } from "@/graphql/mutation/userMutation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [user, setUser] = React.useState({
+  const [admin, setAdmin] = React.useState({
     email: "",
     password: "",
   });
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
-  const [loginUser, { loading: loginLoading }] =
-    useMutation(LOGIN_USER_MUTATION);
-
+  const [loginAdmin, { loading: loginLoading }] =
+    useMutation(LOGIN_ADMIN_MUTATION);
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await loginUser({
+      const { data } = await loginAdmin({
         variables: {
           input: {
-            email: user.email,
-            password: user.password,
+            email: admin.email,
+            password: admin.password,
           },
         },
       });
-
-      if (data?.loginUser.status) {
-        console.log(data.loginUser.id);
-        localStorage.setItem("userId", data.loginUser.id);
-        Cookies.set("token", data.loginUser.token, { expires: 1 });
-        router.push("/dashboard");
+      if (data?.loginAdmin.status) {
+        console.log(data.loginAdmin.admin_id);
+        localStorage.setItem("adminId", data.loginAdmin.admin_id);
+        router.push("/dashboard_admin");
       } else {
-        throw new Error(data?.loginUser.message || "Login failed");
+        throw new Error(data?.loginAdmin.message || "Login failed");
       }
     } catch (error) {
       console.log(error.message);
@@ -42,12 +37,12 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    if (user.email.length > 0 && user.password.length > 0) {
+    if (admin.email.length > 0 && admin.password.length > 0) {
       setButtonDisabled(false);
     } else {
       setButtonDisabled(true);
     }
-  }, [user]);
+  }, [admin]);
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen py-2 bg-cover bg-center h-screen"
@@ -62,8 +57,8 @@ export default function LoginPage() {
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
         id="email"
         type="email"
-        value={user.email}
-        onChange={(e) => setUser({ ...user, email: e.target.value })}
+        value={admin.email}
+        onChange={(e) => setAdmin({ ...admin, email: e.target.value })}
         placeholder="email"
       />
 
@@ -72,17 +67,16 @@ export default function LoginPage() {
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
         id="password"
         type="password"
-        value={user.password}
-        onChange={(e) => setUser({ ...user, password: e.target.value })}
+        value={admin.password}
+        onChange={(e) => setAdmin({ ...admin, password: e.target.value })}
         placeholder="password"
       />
       <button
-        onClick={handleLogin}
+        onClick={buttonDisabled ? null : handleLogin}
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600"
       >
         {buttonDisabled ? "No login" : "Login"}
       </button>
-      <Link href="/signup">Visit SignUp Page</Link>
     </div>
   );
 }

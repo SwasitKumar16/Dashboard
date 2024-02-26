@@ -14,19 +14,22 @@ datasource db {
 }
 
 model users {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   firstName String
   lastName  String
-  username  String @unique
-  email     String @unique
+  username  String  @unique
+  email     String  @unique
   password  String
+  admin     admin[]
 }
 
 model admin {
-  id        Int    @id @default(autoincrement())
+  admin_id  Int    @id @default(autoincrement())
   firstName String
   lastName  String
   username  String @unique
   email     String @unique
   password  String
+  userId    Int
+  user      users  @relation(fields: [userId], references: [id])
 }

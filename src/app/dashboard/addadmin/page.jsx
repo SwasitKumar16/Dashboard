@@ -1,40 +1,42 @@
 "use client";
-import Link from "next/link";
+// import Link from "next/link";
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useMutation } from "@apollo/client";
-import { REGISTER_USER_MUTATION } from "@/graphql/mutation/userMutation";
+import { REGISTER_ADMIN_MUTATION } from "@/graphql/mutation/userMutation";
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [user, setUser] = React.useState({
+  const [admin, setAdmin] = React.useState({
     firstname: "",
     lastname: "",
     email: "",
     password: "",
     username: "",
+    userId: "",
   });
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
 
-  const [registerUser, { loading: registerLoading }] = useMutation(
-    REGISTER_USER_MUTATION
+  const [registerAdmin, { loading: registerLoading }] = useMutation(
+    REGISTER_ADMIN_MUTATION
   );
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await registerUser({
+      const { data } = await registerAdmin({
         variables: {
           input: {
-            username: user.username,
-            email: user.email,
-            password: user.password,
-            firstName: user.firstname,
-            lastName: user.lastname,
+            username: admin.username,
+            email: admin.email,
+            password: admin.password,
+            firstName: admin.firstname,
+            lastName: admin.lastname,
+            userId: parseInt(admin.userId, 10),
           },
         },
       });
-      if (data?.registerUser) {
-        router.push("/login");
+      if (data?.registerAdmin) {
+        console.log(registerAdmin);
+        window.location.reload();
       } else {
         throw new Error("Failed");
       }
@@ -45,15 +47,16 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (
-      user.email.length > 0 &&
-      user.password.length > 0 &&
-      user.username.length > 0
+      admin.email.length > 0 &&
+      admin.password.length > 0 &&
+      admin.username.length > 0 &&
+      admin.userId > 0
     ) {
       setButtonDisabled(false);
     } else {
       setButtonDisabled(true);
     }
-  }, [user]);
+  }, [admin]);
 
   return (
     <div
@@ -62,15 +65,15 @@ export default function SignupPage() {
         backgroundImage: `url('https://images.unsplash.com/photo-1518655048521-f130df041f66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
       }}
     >
-      <h1>{registerLoading ? "Processing" : "Signup"}</h1>
+      <h1>{registerLoading ? "Processing" : "Create New Admin"}</h1>
       <hr />
       <label htmlFor="firstname">username</label>
       <input
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
         id="firstname"
         type="text"
-        value={user.firstname}
-        onChange={(e) => setUser({ ...user, firstname: e.target.value })}
+        value={admin.firstname}
+        onChange={(e) => setAdmin({ ...admin, firstname: e.target.value })}
         placeholder="Firstname"
       />
       <label htmlFor="username">lastname</label>
@@ -78,8 +81,8 @@ export default function SignupPage() {
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
         id="lastname"
         type="text"
-        value={user.lastname}
-        onChange={(e) => setUser({ ...user, lastname: e.target.value })}
+        value={admin.lastname}
+        onChange={(e) => setAdmin({ ...admin, lastname: e.target.value })}
         placeholder="lastname"
       />
       <label htmlFor="username">username</label>
@@ -87,8 +90,8 @@ export default function SignupPage() {
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
         id="username"
         type="text"
-        value={user.username}
-        onChange={(e) => setUser({ ...user, username: e.target.value })}
+        value={admin.username}
+        onChange={(e) => setAdmin({ ...admin, username: e.target.value })}
         placeholder="username"
       />
       <label htmlFor="email">email</label>
@@ -96,8 +99,8 @@ export default function SignupPage() {
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
         id="email"
         type="text"
-        value={user.email}
-        onChange={(e) => setUser({ ...user, email: e.target.value })}
+        value={admin.email}
+        onChange={(e) => setAdmin({ ...admin, email: e.target.value })}
         placeholder="email"
       />
       <label htmlFor="password">password</label>
@@ -105,17 +108,27 @@ export default function SignupPage() {
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
         id="password"
         type="password"
-        value={user.password}
-        onChange={(e) => setUser({ ...user, password: e.target.value })}
+        value={admin.password}
+        onChange={(e) => setAdmin({ ...admin, password: e.target.value })}
         placeholder="password"
       />
+      <label htmlFor="userId">userId</label>
+      <input
+        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
+        id="userId"
+        type="text"
+        value={admin.userId}
+        onChange={(e) => setAdmin({ ...admin, userId: e.target.value })}
+        placeholder="userId"
+      />
+
       <button
-        onClick={handleSignUp}
+        onClick={buttonDisabled ? null : handleSignUp}
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
       >
         {buttonDisabled ? "No signup" : "Signup"}
       </button>
-      <Link href="/login">Visit login page</Link>
+      {/* <Link href="/login">Visit login page</Link> */}
     </div>
   );
 }
